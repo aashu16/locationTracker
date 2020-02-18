@@ -9,6 +9,7 @@ const { promisify } = require("util");
 
 const app = new Koa();
 const router = new Router();
+const logger = require("koa-logger");
 
 const redis = require("redis");
 
@@ -21,6 +22,8 @@ const getAsync = promisify(client.get).bind(client);
 
 app.use(bodyParser());
 
+app.use(logger());
+
 app.use(async (ctx, next) => {
   try {
     await next();
@@ -32,13 +35,14 @@ app.use(async (ctx, next) => {
 });
 
 router.get("/", (ctx, next) => {
-  ctx.body = "Hello";
+  ctx.body = {
+    message: "Hello, world!",
+    status: "success",
+  };
 });
 
 router.get("/getLocation/:code", async (ctx, next) => {
   const locationCode = ctx.params.code;
-  console.log(locationCode);
-  // let coords;
 
   const reply = await getAsync(locationCode);
 
@@ -69,7 +73,6 @@ router.post("/setLocation/:code", (ctx, next) => {
   const locationCode = ctx.params.code;
   const coords = ctx.request.body["lat"] + "," + ctx.request.body["lng"];
 
-  console.log(coords);
   client.set(locationCode, coords);
 
   ctx.status = 200;
