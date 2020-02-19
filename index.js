@@ -10,6 +10,7 @@ const { promisify } = require("util");
 const app = new Koa();
 const router = new Router();
 const logger = require("koa-logger");
+const cors = require("@koa/cors");
 
 const redis = require("redis");
 
@@ -19,6 +20,8 @@ client.on("error", function(error) {
 });
 
 const getAsync = promisify(client.get).bind(client);
+
+app.use(cors());
 
 app.use(bodyParser());
 
