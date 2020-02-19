@@ -21,7 +21,12 @@ client.on("error", function(error) {
 
 const getAsync = promisify(client.get).bind(client);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    allowHeaders: ["Content-Type"],
+  }),
+);
 
 app.use(bodyParser());
 
